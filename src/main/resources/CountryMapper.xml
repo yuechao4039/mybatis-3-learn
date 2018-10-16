@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sndj.CountryMapper">
+
+
+    <select id="query" resultType="com.sndj.Country">
+        select
+        <if test="id + 1 == value ">
+            countrycode
+        </if>
+        <if test="id + 1 neq value ">
+            countryname
+        </if>
+        from country
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+</mapper>

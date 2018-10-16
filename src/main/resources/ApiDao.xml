@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dld.hll.financial.auth.dao.ApiDao">
+
+<delete id="deleteById"  >
+	update tbl_auth_api set action=2 where apiID=#{apiID} 
+</delete> 
+ 
+<select id="queryByUrl"   resultType="com.dld.hll.financial.auth.entity.ApiEntity">
+	select apiID,url,apiName,apiDesc,
+	isActive,sourceType from tbl_auth_api where url=#{url} and action&lt;2
+	<if test="apiID!=null">
+		and apiID!=#{apiID}
+	</if>
+</select> 
+ 
+<select id="query"   resultType="com.dld.hll.financial.auth.entity.ApiEntity">
+	select apiID,url,apiName,apiDesc,
+	isActive,sourceType from tbl_auth_api where action&lt;2
+	<if test='apiID!=null'>
+		and apiID=#{apiID}
+	</if>
+	<if test='url!=null and url!=""'>
+		and url=#{url}
+	</if>
+	<if test='apiName!=null and apiName!=""'>
+		and apiName=#{apiName}
+	</if>
+	<if test='apiDesc!=null and apiDesc!=""'>
+		and apiDesc=#{apiDesc}
+	</if>
+	<if test='isActive!=null'>
+		and isActive=#{isActive}
+	</if>
+	<if test='sourceType!=null'>
+		and sourceType=#{sourceType}
+	</if>
+
+</select> 
+ 
+<insert id="insert"  parameterType="com.dld.hll.financial.auth.entity.ApiEntity"  useGeneratedKeys="true" keyProperty="apiID" >
+	insert into tbl_auth_api(<trim  suffixOverrides=",">
+	<if test='apiID!=null'>apiID,</if>
+	<if test='url!=null and url!=""'>url,</if>
+	<if test='apiName!=null and apiName!=""'>apiName,</if>
+	<if test='apiDesc!=null and apiDesc!=""'>apiDesc,</if>
+	<if test='isActive!=null'>isActive,</if>
+	<if test='sourceType!=null'>sourceType,</if>
+</trim>)
+	values(<trim  suffixOverrides=",">
+	<if test='apiID!=null'>#{apiID},</if>
+	<if test='url!=null and url!=""'>#{url},</if>
+	<if test='apiName!=null and apiName!=""'>#{apiName},</if>
+	<if test='apiDesc!=null and apiDesc!=""'>#{apiDesc},</if>
+	<if test='isActive!=null'>#{isActive},</if>
+	<if test='sourceType!=null'>#{sourceType},</if>
+	</trim>)
+</insert> 
+ 
+<update id="update"  >
+	update tbl_auth_api
+		<set>
+ 	action=1,
+	<if test='url!=null and url!=""'>url=#{url},</if>
+	<if test='apiName!=null and apiName!=""'>apiName=#{apiName},</if>
+	<if test='apiDesc!=null '>apiDesc=#{apiDesc},</if>
+	<if test='isActive!=null'>isActive=#{isActive},</if>
+	</set>
+	where apiID=#{apiID} and action&lt;2
+</update> 
+ <select id="queryList" resultType="com.dld.hll.financial.auth.entity.ApiEntity">
+	 select apiID,url,apiName,apiDesc,
+	isActive,sourceType from tbl_auth_api where action&lt;2 and apiID in(
+	<foreach collection="list" item="item" separator=",">
+		#{item}
+	</foreach>
+	)
+ </select>
+	<select id="queryById" resultType="com.dld.hll.financial.auth.entity.ApiEntity">
+		 select apiID,url,apiName,apiDesc,
+	isActive,sourceType from tbl_auth_api where action&lt;2 and apiID=#{apiID}
+	</select>
+	<select id="queryVague" resultType="com.dld.hll.financial.auth.entity.ApiEntity">
+		<bind name="Vague" value="'%'+vague+'%'" />
+		 select apiID,url,apiName,apiDesc,
+	isActive,sourceType from tbl_auth_api where action&lt;2 and (url like #{Vague} or apiName like #{Vague})
+	</select>
+	<insert id="insertList">
+		insert into tbl_auth_api(url,apiName,sourceType) values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.url},#{item.apiName},0)
+		</foreach>
+	</insert>
+	<delete id="deleteVague">
+		<bind name="Vague" value="'%'+vague+'%'"/>
+		delete from tbl_auth_api where url like #{Vague}
+	</delete>
+</mapper>
